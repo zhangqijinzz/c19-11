@@ -1,22 +1,21 @@
-import { useState } from 'react';
 import { AnalysisPanel } from './features/analysis-preview/AnalysisPanel';
 import { StatusBar } from './features/analysis-preview/StatusBar';
 import { ElementPalette } from './features/element-library/ElementPalette';
 import { FieldSettingsPanel } from './features/field-setup/FieldSettingsPanel';
 import { FieldCanvas } from './features/layout-editor/FieldCanvas';
 import { InspectorPanel } from './features/layout-editor/InspectorPanel';
+import { RenameInput } from './components/RenameInput';
 import { useExpoSketchViewModel } from './hooks/useExpoSketchViewModel';
 
 function App() {
   const { state, vm } = useExpoSketchViewModel();
-  const [projectTitle, setProjectTitle] = useState('');
 
   if (state.phase === 'loading') return <div className="loading-screen"><div className="loading-mark">✦</div><strong>正在打开 ExpoSketch</strong><span>恢复最近一次场地布局…</span></div>;
 
   return <div className="app-shell">
     <aside className="left-rail">
       <div className="brand"><div className="brand-mark">✦</div><div><strong>ExpoSketch</strong><span>SPACE PLANNER</span></div></div>
-      <div className="project-heading"><span className="section-kicker">CURRENT PROJECT</span><input aria-label="项目名称" value={projectTitle || state.document.title} onChange={(event) => setProjectTitle(event.target.value)} onBlur={() => { if (projectTitle.trim()) { vm.renameProject(projectTitle); setProjectTitle(''); } }} onKeyDown={(event) => { if (event.key === 'Enter') event.currentTarget.blur(); }} /></div>
+      <div className="project-heading"><span className="section-kicker">CURRENT PROJECT</span><RenameInput aria-label="项目名称" value={state.document.title} onCommit={vm.renameProject.bind(vm)} /></div>
       <div className="rail-divider" />
       <ElementPalette onAdd={vm.addElement.bind(vm)} />
       <div className="tips-card"><span className="tips-icon">⌘</span><div><strong>快速提示</strong><p>拖动元素调整位置<br />检查模式查看通行风险</p></div></div>

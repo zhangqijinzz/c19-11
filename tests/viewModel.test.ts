@@ -51,4 +51,27 @@ describe('ExpoSketchViewModel', () => {
     vm.resizeSelected(0, 0);
     expect(vm.state.document.elements[0].width).toBe(before);
   });
+
+  it('applies a committed element rename to analysis and path labels', () => {
+    const vm = new ExpoSketchViewModel(fakeRepository());
+    vm.selectElement('entry-1');
+    vm.renameSelected('  东门入口  ');
+    expect(vm.state.document.elements.find((element) => element.id === 'entry-1')?.name).toBe('东门入口');
+    expect(vm.state.analysis.path?.fromName).toBe('东门入口');
+  });
+
+  it('keeps the previous element name when the committed name is blank', () => {
+    const vm = new ExpoSketchViewModel(fakeRepository());
+    vm.selectElement('stage-1');
+    vm.renameSelected('   ');
+    expect(vm.state.document.elements.find((element) => element.id === 'stage-1')?.name).toBe('分享舞台');
+  });
+
+  it('renames the project only with a non-blank trimmed title', () => {
+    const vm = new ExpoSketchViewModel(fakeRepository());
+    vm.renameProject('  秋季创意展  ');
+    expect(vm.state.document.title).toBe('秋季创意展');
+    vm.renameProject('   ');
+    expect(vm.state.document.title).toBe('秋季创意展');
+  });
 });
